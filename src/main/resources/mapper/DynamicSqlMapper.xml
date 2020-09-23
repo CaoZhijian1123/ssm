@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.console.mybatis.mapper.DynamicSqlMapper">
+    <cache-ref namespace="com.console.mybatis.mapper.DepartmentMapper"/>
+
+
+<!--    <select id="queryCondition" resultType="com.console.mybatis.bean.Employee">-->
+<!--        select * from employee-->
+<!--        <trim prefix="where" suffixOverrides="and"  >-->
+<!--            <if test="id!=null">-->
+<!--                id=#{id} and-->
+<!--            </if>-->
+
+<!--            <if test="lastName!=null and lastName!=''">-->
+<!--                 last_name like #{lastName} and-->
+<!--            </if>-->
+
+<!--            <if test="email!=null and email.trim()!=''">-->
+<!--                email like #{email} and-->
+<!--            </if>-->
+
+<!--            <if test="gender==0 or gender==1">-->
+<!--                gender=#{gender}-->
+<!--            </if>-->
+
+<!--        </trim>-->
+
+
+
+<!--    </select>-->
+
+    <select id="queryCondition" resultType="com.console.mybatis.bean.Employee">
+        select * from employee
+
+--         <bind name="_lastName" value="'%'+lastName+'%'"/>
+       <where>
+           <choose>
+               <when test="id!=null">
+                   id=#{id}
+               </when>
+
+               <when test="lastName!=null">
+                   last_name like #{lastName}
+               </when>
+
+               <when test="email!=null">
+                   email like #{email}
+               </when>
+
+               <otherwise>
+                   gender=0
+               </otherwise>
+
+           </choose>
+       </where>
+
+
+
+    </select>
+    <select id="queryByIds" resultType="com.console.mybatis.bean.Employee">
+        select * from employee
+        <foreach collection="ids" item="emp_id" separator="," open=" where id in (" close=")">
+            #{emp_id}
+        </foreach>
+
+    </select>
+
+
+    <sql id="column">
+        <choose>
+            <when test="_databaseId=='oracle'">
+                emp_id,last_name,emp_email,gender
+            </when>
+
+            <when test="_databaseId=='mysql'">
+                id,last_name,email,gender
+            </when>
+        </choose>
+
+    </sql>
+
+    <select id="queryColumn" >
+        select <include refid="column"/> from employee
+    </select>
+</mapper>

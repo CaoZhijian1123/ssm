@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.console.mybatis.mapper.EmployeeMapper">
+
+    <insert id="addEmployee" parameterType="com.console.mybatis.bean.Employee"
+        useGeneratedKeys="true" keyProperty="id"
+    >
+        insert  into employee(last_name,email,gender)
+        values (#{lastName},#{email},#{gender})
+    </insert>
+
+    <update id="updateEmployee" parameterType="com.console.mybatis.bean.Employee">
+        update employee
+<!--        <set>-->
+<!--            <if test="lastName!=null">-->
+<!--                last_name=#{lastName},-->
+<!--            </if>-->
+<!--            <if test="email!=null">-->
+<!--                email=#{email},-->
+<!--            </if>-->
+<!--            <if test="gender!=null">-->
+<!--                gender=#{gender}-->
+<!--            </if>-->
+<!--        </set>-->
+
+        <trim prefix="set" suffixOverrides=",">
+            <if test="lastName!=null">
+                last_name=#{lastName},
+            </if>
+            <if test="email!=null">
+                email=#{email},
+            </if>
+            <if test="gender!=null">
+                gender=#{gender}
+            </if>
+        </trim>
+        where id=#{id}
+
+
+
+    </update>
+
+
+    <delete id="deleteEmployeeById">
+     delete from employee where id =#{id}
+    </delete>
+
+    <resultMap id="resultMapEmployee" type="com.console.mybatis.bean.Employee">
+        <id column="id" property="id"></id>
+        <result column="last_name" property="lastName"></result>
+
+        <result column="email" property="email"></result>
+        <result column="gender" property="gender"></result>
+    </resultMap>
+
+
+    <select id="queryById"  resultMap="resultMapEmployee">
+    select * from employee where id = #{id}
+  </select>
+
+
+    <select id="queryAll" resultType="com.console.mybatis.bean.Employee">
+        select * from employee
+    </select>
+
+
+
+    <select id="getEmployeeByNameAndEmail" resultType="com.console.mybatis.bean.Employee">
+        select * from employee where last_name=#{name} and email=#{email,jdbcType=NULL}
+    </select>
+    <select id="getEmpToMap" resultType="java.util.Map">
+        select * from employee where id =#{id}
+    </select>
+    <select id="getNameLike" resultType="java.util.Map">
+        select * from employee where last_name like #{name}
+    </select>
+
+
+    <select id="queryByDepId" resultType="com.console.mybatis.bean.Employee">
+        select * from employee where dep_id=#{id}
+    </select>
+
+
+</mapper>

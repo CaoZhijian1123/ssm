@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.console.mybatis.mapper.EmpDepMapper">
+
+
+    <resultMap id="resultMapQueryById" type="com.console.mybatis.bean.Employee">
+        <id column="id" property="id"></id>
+        <result column="last_name" property="lastName"></result>
+        <result column="gender" property="gender"></result>
+        <result column="email" property="email"></result>
+        <result column="did" property="department.id"></result>
+        <result column="dep" property="department.depName"></result>
+
+    </resultMap>
+
+    <resultMap id="resultMapQueryById2" type="com.console.mybatis.bean.Employee">
+        <id column="id" property="id"></id>
+        <result column="last_name" property="lastName"></result>
+        <result column="gender" property="gender"></result>
+        <result column="email" property="email"></result>
+
+        <association property="department" javaType="com.console.mybatis.bean.Department">
+            <id column="did" property="id"></id>
+            <result column="dep" property="depName"></result>
+        </association>
+
+    </resultMap>
+
+    <select id="queryById" resultMap="resultMapQueryById">
+        select e.id id, e.last_name last_name,e.gender gender,e.email email,d.id did,d.dep_name dep from employee e,department d where e.dep_id=d.id and e.id=#{id}
+    </select>
+
+    <resultMap id="resultMapQueryByStep" type="com.console.mybatis.bean.Employee">
+        <id column="id" property="id"></id>
+        <result column="last_name" property="lastName"></result>
+        <result column="gender" property="gender"></result>
+        <result column="email" property="email"></result>
+
+        <association property="department"
+            select="com.console.mybatis.mapper.DepartmentMapper.queryById"
+                     column="dep_id"
+        >
+
+        </association>
+
+    </resultMap>
+
+
+
+
+    <select id="queryByStep"  resultMap="resultMapQueryByStep">
+        select * from employee where id=#{id}
+    </select>
+</mapper>
